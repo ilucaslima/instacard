@@ -1,0 +1,32 @@
+// This file defines the data model for the application using Prisma's schema language.
+// It specifies the database connection and the models that represent the data structure.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+
+  login    String @unique
+  password String
+  name     String
+  surname  String
+  role     Role   @default(CLIENT)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+
+  @@map("user")
+}
+
+enum Role {
+  CLIENT
+  ADMIN
+  ROOT
+}
