@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { UserResponseDTO, usersDTO } from './users.dto';
 
@@ -14,7 +14,7 @@ export class UsersService {
     });
 
     if (isExistUser) {
-      throw new Error('User already exists');
+      throw new HttpException('user already exist', HttpStatus.CONFLICT);
     }
     const passwordHash = await hash(data.password, 10);
 
@@ -36,7 +36,7 @@ export class UsersService {
     });
 
     if (!isExistUser) {
-      throw new Error('User not found');
+      throw new HttpException('user already exist', HttpStatus.NOT_FOUND);
     }
 
     const response: usersDTO = await this.prisma.user.update({
@@ -58,7 +58,7 @@ export class UsersService {
     });
 
     if (!isExistUser) {
-      throw new Error('User not found');
+      throw new HttpException('user not found', HttpStatus.NOT_FOUND);
     }
 
     await this.prisma.user.delete({
@@ -72,13 +72,13 @@ export class UsersService {
     });
 
     if (!user) {
-      throw new Error('User not found');
+      throw new HttpException('user not found', HttpStatus.NOT_FOUND);
     }
 
     const isPasswordValid = await compare(password, user.password);
 
     if (!isPasswordValid) {
-      throw new Error('Invalid password');
+      throw new HttpException('invalid redentials', HttpStatus.UNAUTHORIZED);
     }
 
     return new UserResponseDTO(user);
