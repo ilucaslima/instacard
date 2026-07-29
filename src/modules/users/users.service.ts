@@ -83,4 +83,10 @@ export class UsersService {
 
     return new UserResponseDTO(user);
   }
+
+  async findByPayload({ login }: any): Promise<usersDTO> {
+    return (await this.prisma.user.findFirst({
+      where: { login },
+    })) as usersDTO;
+  }
 }
